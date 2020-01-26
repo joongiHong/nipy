@@ -28,20 +28,123 @@ class Scode:  # Scode 클래스 생성
                      "전북": "4500000000", "전남": "4600000000", "경북": "4700000000",
                      "경남": "4800000000", "제주": "5000000000"}  # 지역 목록
 
-        self.city = city_dict.get(city, "nocity")  # 지역 코드로 변환
+        self.city = city_dict.get(city, "")  # 지역 코드로 변환
         self.name = name  # 학교 이름 저장
 
-    def codefind(self):  # 실질적으로 코드를 반환하는 부분
-        url = "https://www.schoolinfo.go.kr/ei/ss/Pneiss_a01_10.do"  # 학교알리미 코드 불러오는 주소
-        para = {"SIDO_CODE": self.city, "SRC_HG_NM": self.name}  # post 파라미터
+    def codefind(self, kind):  # 실질적으로 코드를 반환하는 부분
+        url = "https://www.schoolinfo.go.kr/ei/ss/Pneiss_a01_l0.do"  # 학교알리미 코드 불러오는 주소
+        para = {
+            "HG_CO": "",
+            "SEARCH_KIND": "",
+            "HG_JONGRYU_GB": "",
+            "GS_HANGMOK_CD": "",
+            "GU_GUN_CODE": "",
+            "GUGUN_CODE": "",
+            "SIDO_CODE": self.city,
+            "SRC_HG_NM": self.name
+        }  # post 파라미터
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        }  # 헤더 데이터
 
-        re = requests.post(url, data=para)  # 서버 접속
+        re = requests.post(url, data=para, headers=headers)  # 서버 접속
+        rejs = json.loads(re.text)  # json 데이터 불러오기
+        reco = re.status_code  # 응답코드 저장
 
-        if re != "200":
-            return("SERVER ERROR")
+        if int(reco) != 200:
+            return("SERVER ERROR")  # 접속 여부 확인
 
+        elementary = rejs['schoolList02']  # 초등학교 데이터
+        middle = rejs['schoolList03']  # 중학교 데이터
+        high = rejs['schoolList04']  # 고등학교 데이터
+        special = rejs['schoolList05']  # 특수학교 데이터
 
-# ~~ 2. 학교 급식을 불러오는 api ~~
+        if len(elementary) == 0 and len(middle) == 0 and len(high) == 0 and len(special) == 0:
+            return("CAN NOT FIND SCHOOL")
+
+        # 담아서 넘길 리스트 만들기
+        self.elementary = []
+        self.middle = []
+        self.high = []
+        self.special = []
+
+        if len(elementary) > 0:  # 초등학교 데이터 분석
+            for i in range(0, len(elementary)):
+                sinfo = elementary[i]
+                sname = sinfo['SCHUL_NM']
+                saddress = sinfo['SCHUL_RDNMA']
+                sncode = sinfo['SCHUL_CODE']
+
+                sinfo = {
+                    'NAME': sname,
+                    'ADDRESS': saddress,
+                    'CODE': sncode
+                }
+
+                self.elementary.append(sinfo)
+
+        if len(middle) > 0:  # 중학교 데이터 분석
+            for i in range(0, len(middle)):
+                sinfo = middle[i]
+                sname = sinfo['SCHUL_NM']
+                saddress = sinfo['SCHUL_RDNMA']
+                sncode = sinfo['SCHUL_CODE']
+
+                sinfo = {
+                    'NAME': sname,
+                    'ADDRESS': saddress,
+                    'CODE': sncode
+                }
+
+                self.middle.append(sinfo)
+
+        if len(high) > 0:  # 고등학교 데이터 분석
+            for i in range(0, len(high)):
+                sinfo = high[i]
+                sname = sinfo['SCHUL_NM']
+                saddress = sinfo['SCHUL_RDNMA']
+                sncode = sinfo['SCHUL_CODE']
+
+                sinfo = {
+                    'NAME': sname,
+                    'ADDRESS': saddress,
+                    'CODE': sncode
+                }
+
+                self.high.append(sinfo)
+
+        if len(special) > 0:  # 특수학교 데이터 분석
+            for i in range(0, len(special)):
+                sinfo = special[i]
+                sname = sinfo['SCHUL_NM']
+                saddress = sinfo['SCHUL_RDNMA']
+                sncode = sinfo['SCHUL_CODE']
+
+                sinfo = {
+                    'NAME': sname,
+                    'ADDRESS': saddress,
+                    'CODE': sncode
+                }
+
+                self.special.append(sinfo)
+
+        if kind == "1":
+            slist = self.elementary
+        elif kind == "2":
+            slist = self.middle
+        elif kind == "3":
+            slist = self.high
+        elif kind == "4":
+            slist = self.special
+        elif kind == "0":
+            slist = [self.elementary, self.middle, self.high, self.special]
+        else:
+            slist = [self.elementary, self.middle, self.high, self.special]
+
+        return(slist)
+
+ # ~~ 2. 학교 급식을 불러오는 api ~~
+
 
 class Smeal:  # 클래스
     def __init__(self, ooe, code, sclass):  # 초기화자 메서드 선언 (기본학교정보설정)
