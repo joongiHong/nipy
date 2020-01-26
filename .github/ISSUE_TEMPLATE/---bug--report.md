@@ -18,3 +18,7 @@ Please write Development Environment here
 ## 수정방안 (Advice)
 해결 방법을 알고 계실 경우 작성해 주십시오.
 Please write advice of bug here.
+
+## 스크린샷 (Screen Shot)
+버그와 관련한 스크린샷을 첨부해 주십시오.
+Please add screen shot about bug.
