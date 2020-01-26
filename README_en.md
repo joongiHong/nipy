@@ -5,40 +5,35 @@
 
 [한국어](https://github.com/joongiHong/nipy/blob/master/README.md) | [English](https://github.com/joongiHong/nipy/blob/master/README_en.md)
 
-대한민국 교육부의 교육행정정보시스템인 나이스와 관련한 파이썬 개발을 하실 때 보다 용이하게 하실 수 있도록 돕는 모듈입니다.  
-자세한 내용은 아래를 참고하여 주십시오.
+Nipy is unofficial NEIS Module for Korean student(programer).  
+NEIS is ROK Ministry of Education's informaion system.
 
-## 환영합니다 🎐
+## Welcome! 🎐
 
-대한민국 교육부는 2003년 부터 교육행정정보시스템인 나이스를 제공하기 시작하였습니다. 교육당국의 온-나라 시스템이라 불릴 정도로 대부분의 교육정보는 나이스에 제공되어 있습니다. 그래서 많은 학생 개발자분들은 나이스로부터 정보를 받아오는 프로그램을 개발하고는 합니다. 본인의 개발 실력을 검증할 수 있으며, 실생활에서도 많이 사용되기 때문이죠.
+ROK Ministry of Education maked National Education Information System(NEIS) on 2003. Many education information in NEIS. So many Korean students make NEIS crawler. but it is hard.
 
-하지만 실제 개발에서는 많은 시행착오가 발생하기 마련입니다. 나이스로부터 정보를 받아오기 위해선 나이스의 로직을 파악하여야 하며, 로직을 파악하여도 원하는 정보를 크롤링해오는 스크립트를 짜야하죠. 이러한 과정은 힘들고 어려울 수 있습니다.
+So I make a NiPy. Nipy is unofficial NEIS Module for Korean student(or programer). NiPy is easy and useful. If you want to make some NEIS crawler, NiPy helps you.
 
-그래서 NiPy 라는 통합 모듈을 개발하여 추후에 나이스와 연계하여 개발하고자 할 때 조금 더 빨리 그리고 더 안정적으로 개발할 수 있도록 돕기로 하였습니다. 본 NiPy는 MIT 라이선스로 제공되기에 출처만 기재하시면 자유롭게 사용하실 수 있습니다.
-
-## 사용하는 방법 📖
+## How to use? 📖
 
 ```
-~ 사용하기에 앞서 ~
+~ Notice ~
 
-본 NiPy는 1인 개발과 학업을 병행하는 학생이 제작한 모듈입니다.
-따라서 문제가 발생할 경우 빠르게 대처가 어려울 수 있으며
-기능이 제대로 작동하지 않을 수 있습니다.
-이점 참고하여 개발하여 주시기 바랍니다.
+I am a student(and programer)
+So if this module has bug, I can't fix them quickly.
+Please understand. :)
 
-본 NiPy를 이용하여 구현하실 수 있는 기능은 다음과 같습니다.
+NiPy can...
 
-- 학교 고유 코드 불러오기
-- 급식 정보 불러오기
-
-이 외에도 시간표 불러오기, 학교 정보 불러오기 기능 등을 기획, 개발 중입니다.
+- NEIS code find
+- School meal crawling
 ```
 
-| 목차                                                                                                                                        |
-| ------------------------------------------------------------------------------------------------------------------------------------------- |
-| [모듈 설치하기](#모듈-설치하기)<br/>[학교 고유 코드 api (Scode)](#학교-고유-코드-api)<br/>[학교 급식 정보 api (Smeal)](#학교-급식-정보-api) |
+| Content                                                                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Install Modules](#Install-Modules)<br/>[NEIS code find api (Scode)](#NEIS-code-find-api)<br/>[School meal crawling api (Smeal)](#School-meal-crawling-api) |
 
-### 모듈 설치하기
+### Install Modules
 
 아래 목록의 모듈을 정상 사용을 위해 반드시 필요한 모듈입니다.  
 설치를 진행하여 주시기 바랍니다.
@@ -53,7 +48,7 @@
 - openpyxl
 - csv
 
-### 학교 고유 코드 api
+### NEIS code find api
 
 **1. 기본 정보 설정**
 
@@ -118,7 +113,7 @@ print(l.codefind("2"))
   | 특수학교 | 4    |
   | 모든학교 | 0    |
 
-### 학교 급식 정보 api
+### School meal crawling api
 
 **1. 기본 정보 설정**
 
@@ -222,30 +217,26 @@ SUCCEED
   | 중식 | 2    |
   | 석식 | 3    |
 
-## 라이선스 📜
+## License 📜
 
-본 NiPy 모듈의 라이선스는 MIT 라이선스입니다.  
-따라서 출처를 표기하시면 본 모듈의 복제, 배포, 활용을 포함한 모든 행위가 허가됩니다.  
-자세한 내용은 License 파일을 참고하여 주십시오.
+This module's license is MIT.  
+If you want more information about license. Please read License file
 
-## 도움을 주신 분 🤝
+## Thanks 🤝
 
-본 NiPy 모듈 제작에 도움을 주신 분들의 목록입니다.  
-도움을 주셔서 다시 한번 감사드립니다.
-
-- 모듈 제공
+- Module
 
   - [Requests](https://2.python-requests.org/en/master/user/intro/#apache2-license)
   - [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/)
   - [Openpyxl](https://openpyxl.readthedocs.io/en/stable/)
 
-- 아이디어 제공
-  - 친구들
-  - [M4ndU (급식 조회 로직 아이디어)](https://github.com/M4ndU/school_meal_parser_python)
-  - [moseoridve (학교알리미 로직 아이디어)](https://gist.github.com/moseoridev/2ead2abca1af27f489ef0dc6b95c3356)
+- Idea
+  - My Friends
+  - [M4ndU](https://github.com/M4ndU/school_meal_parser_python)
+  - [moseoridve](https://gist.github.com/moseoridev/2ead2abca1af27f489ef0dc6b95c3356)
 
-## 연락처 📞
+## Contact 📞
 
-본 모듈과 관련하여 물어보고 싶으신 점은 다음 연락처로 문의주시기 바랍니다.
+If you want to ask me, Please send a email to me.
 
 - joongi1978@naver.com
