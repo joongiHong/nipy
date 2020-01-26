@@ -10,7 +10,7 @@ NEIS is ROK Ministry of Education's informaion system.
 
 ## Welcome! 🎐
 
-ROK Ministry of Education maked National Education Information System(NEIS) on 2003. Many education information in NEIS. So many Korean students make NEIS crawler. but it is hard.
+ROK Ministry of Education made National Education Information System(NEIS) on 2003. Many education information in NEIS. So many Korean students make NEIS crawler. but it is hard.
 
 So I make a NiPy. Nipy is unofficial NEIS Module for Korean student(or programer). NiPy is easy and useful. If you want to make some NEIS crawler, NiPy helps you.
 
