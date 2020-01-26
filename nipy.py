@@ -13,6 +13,9 @@ import requests  # (필수) 나이스 서버와 통신용
 import json  # (필수) api 사용시 파싱용
 from bs4 import BeautifulSoup  # (필수) 나이스 페이지 파싱용
 
+import openpyxl  # (선택) 엑셀 저장용
+import csv  # (선택) csv 저장용
+
 
 # ~~ 1. 학교 코드를 불러오는 api ~~
 
@@ -41,31 +44,39 @@ class Scode:  # Scode 클래스 생성
 # ~~ 2. 학교 급식을 불러오는 api ~~
 
 class Smeal:  # 클래스
-    def __init__(self, ooe, code, year, month, day, sclass, kind):  # 초기화자 메서드 선언
-        self.ooe = ooe  # 교육청
-        self.year = year  # 조회 년월일
-        self.month = month
-        self.il = day
-        self.ymd = year + "." + month + "." + day
+    def __init__(self, ooe, code, sclass):  # 초기화자 메서드 선언 (기본학교정보설정)
+        city_dict = {"서울": "sen.go.kr", "부산": "pen.go.kr", "대구": "dge.go.kr",
+                     "인천": "ice.go.kr", "광주": "gen.go.kr", "대전": "dje.go.kr",
+                     "울산": "use.go.kr", "세종": "sje.go.kr", "경기": "goe.go.kr",
+                     "강원": "kwe.go.kr", "충북": "cbe.go.kr", "충남": "cne.go.kr",
+                     "전북": "jbe.go.kr", "전남": "jne.go.kr", "경북": "gbe.kr",
+                     "경남": "gne.go.kr", "제주": "jje.go.kr"}  # 학교 목록
+
+        self.ooe = city_dict.get(ooe, "nocity")
         self.sclass = sclass  # 교급
-        self.kind = kind  # 조회 급식 종류
         self.code = code  # 학교 고유 코드
 
-    def day(self):  # 하루치 급식을 조회
-        if type(self.ooe) != str or type(self.ymd) != str or type(self.sclass) != str\
-                or type(self.kind) != str or type(self.code) != str:
+    def day(self, yeon, dal, il, kind):  # 하루치 급식을 조회
+        if type(self.ooe) != str or type(yeon) != str or type(self.sclass) != str\
+                or type(kind) != str or type(self.code) != str or type(dal) != str\
+                or type(il) != str:  # 문자열 형식으로 올바르게 받았는지 확인하는 코드
             return("TYPE ERROR")
 
-        if len(self.year) != 4 or len(self.month) != 2 or len(self.il) != 2\
-                or len(self.sclass) != 1 or len(self.kind) != 1:
+        if len(yeon) != 4 or len(dal) != 2 or len(il) != 2\
+                or len(self.sclass) != 1 or len(kind) != 1:  # 길이가 알맞는지 확인하는 코드
             return("SIZE ERROR")
 
-        url = "http://stu." + self.ooe + ".go.kr/sts_sci_md01_001.do?" +\
+        if self.ooe == "nocity":
+            return("OFFICE ERROR")
+
+        ymd = yeon + "." + dal + "." + il  # 년도 조합
+
+        url = "http://stu." + self.ooe + "/sts_sci_md01_001.do?" +\
             "schulCode=" + self.code +\
             "&schulCrseScCode=" + self.sclass +\
             "&schulKnaScCode=0" + self.sclass +\
-            "&schMmealScCode=" + self.kind +\
-            "&schYmd=" + self.ymd  # 나이스 학교 급식 조회 주소
+            "&schMmealScCode=" + kind +\
+            "&schYmd=" + ymd  # 나이스 학교 급식 조회 주소
 
         response = requests.get(url)  # 급식 정보 조회
         if response.status_code != 200:  # 응답이 200 (정상응답)이 아닐경우
@@ -87,7 +98,7 @@ class Smeal:  # 클래스
                 for sakje in date_filter:
                     date = date.replace(sakje, '')  # 찌끄레기를 삭제
 
-                if date != self.ymd:  # 날짜와 입력날짜 동일 여부 확인
+                if date != ymd:  # 날짜와 입력날짜 동일 여부 확인
                     continue
 
                 hang = i - 1  # 급식정보가 존재하는 행 선언
@@ -116,3 +127,66 @@ class Smeal:  # 클래스
             food = 'NO DATABASE'  # 급식 조회 실패시 안내
 
         return(food)  # 정보 반환
+
+    def month(self, yeon, dal, kind, output):  # 한달치 급식을 조회
+        # 조회하는 월의 마지막 날 구하는 로직
+        if dal == '02':  # 2월 조회시
+            if yeon % 4 == 0 and yeon % 100 != 0:  # 윤년일 경우 29일이 마지막
+                last_day = 29
+            elif yeon % 400 == 0:
+                last_day = 29
+            else:  # 아니면 28이 마지막
+                last_day = 28
+        elif dal == '01' or dal == '03' or dal == '05' or dal == '07' or dal == '08' or dal == '10' or dal == '12':  # 끝날이 31일 목록
+            last_day = 31
+        else:  # 이외는 모두 30일이 마지막
+            last_day = 30
+
+        if output == "e":  # 엑셀 저장 기능
+            op = openpyxl.Workbook()
+            ex = op.active
+
+            try:  # 예외 처리를 위한 try문
+                for i in range(1, last_day + 1):  # 한달치 모두 대입하는 반복문
+                    if i < 10:  # 일 정보가 10 미만일때
+                        i = str(i)
+                        i = "0" + i  # 매개변수 입력 규칙에 의거 두자리로 변환
+
+                    i = str(i)
+
+                    meal = self.day(yeon, dal, i, kind)  # 급식 정보 불러옴
+                    ex.cell(row=int(i), column=1).value = yeon + \
+                        "년" + dal + "월" + i + "일"  # 날짜 정보 엑셀 삽입
+                    ex.cell(row=int(i), column=2).value = meal  # 급식 정보 삽입
+
+                op.save(self.code + "_" + yeon + "년 " + dal + "월" + ".xlsx")
+                op.close
+                return("SUCCEED")
+
+            except:  # 실패시 실패 에러 안내
+                op.close()  # 엑셀 닫기
+                return("EXCEL ERROR")
+
+        if output == "c":  # csv 저장 기능
+            f = open(self.code + "_" + yeon + "년 " + dal + "월" +
+                     ".csv", 'w', encoding='utf-8', newline='')
+            cs = csv.writer(f)
+
+            try:  # 예외 처리를 위한 try문
+                for i in range(1, last_day + 1):  # 한달치 모두 대입하는 반복문
+                    if i < 10:  # 일 정보가 10 미만일때
+                        i = str(i)
+                        i = "0" + i  # 매개변수 입력 규칙에 의거 두자리로 변환
+
+                    i = str(i)
+
+                    meal = self.day(yeon, dal, i, kind)  # 급식 정보 불러옴
+                    cs.writerow([yeon +
+                                 "년" + dal + "월" + i + "일", meal])  # csv 저장
+
+                f.close()  # csv 닫기
+                return("SUCCEED")
+
+            except:  # 실패시 실패 에러 안내
+                f.close()  # csv 닫기
+                return("CSV ERROR")
