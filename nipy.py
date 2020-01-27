@@ -146,7 +146,9 @@ class Scode:  # Scode 클래스 생성
  # ~~ 2. 학교 급식을 불러오는 api ~~
 
 
-class Smeal:  # 클래스
+# ~~ 2. 학교 급식을 불러오는 api ~~
+
+class Smeal:  # Smeal 클래스 생성
     def __init__(self, ooe, code, sclass):  # 초기화자 메서드 선언 (기본학교정보설정)
         city_dict = {"서울": "sen.go.kr", "부산": "pen.go.kr", "대구": "dge.go.kr",
                      "인천": "ice.go.kr", "광주": "gen.go.kr", "대전": "dje.go.kr",
@@ -174,15 +176,17 @@ class Smeal:  # 클래스
 
         ymd = yeon + "." + dal + "." + il  # 년도 조합
 
-        url = "http://stu." + self.ooe + "/sts_sci_md01_001.do?" +\
-            "schulCode=" + self.code +\
-            "&schulCrseScCode=" + self.sclass +\
-            "&schulKnaScCode=0" + self.sclass +\
-            "&schMmealScCode=" + kind +\
-            "&schYmd=" + ymd  # 나이스 학교 급식 조회 주소
+        url = "http://stu." + self.ooe + "/sts_sci_md01_001.do"  # 나이스 급식 조회 주소
+        para = {
+            "schulCode": self.code,  # 학교 코드
+            "schulCrseScCode": self.sclass,  # 교급
+            "schulKnaScCode": "0" + self.sclass,  # 교급
+            "schMmealScCode": kind,  # 식단 종류
+            "schYmd": ymd  # 조회년월일
+        }
 
-        response = requests.get(url)  # 급식 정보 조회
-        if response.status_code != 200:  # 응답이 200 (정상응답)이 아닐경우
+        response = requests.get(url, params=para)  # 급식 정보 조회
+        if int(response.status_code) != 200:  # 응답이 200 (정상응답)이 아닐경우
             return('SERVER ERROR')  # 에러 반환
 
         foodhtml = BeautifulSoup(response.text, 'html.parser')  # 급식정보 파싱 준비
@@ -293,3 +297,66 @@ class Smeal:  # 클래스
             except:  # 실패시 실패 에러 안내
                 f.close()  # csv 닫기
                 return("CSV ERROR")
+
+
+# ~~ 3. 학교 학사일정을 불러오는 api ~~
+
+class Scalendar:
+    def __init__(self, ooe, code, sclass):  # 초기화자 선언
+        city_dict = {"서울": "sen.go.kr", "부산": "pen.go.kr", "대구": "dge.go.kr",
+                     "인천": "ice.go.kr", "광주": "gen.go.kr", "대전": "dje.go.kr",
+                     "울산": "use.go.kr", "세종": "sje.go.kr", "경기": "goe.go.kr",
+                     "강원": "kwe.go.kr", "충북": "cbe.go.kr", "충남": "cne.go.kr",
+                     "전북": "jbe.go.kr", "전남": "jne.go.kr", "경북": "gbe.kr",
+                     "경남": "gne.go.kr", "제주": "jje.go.kr"}  # 학교 목록
+
+        self.ooe = city_dict.get(ooe, "nocity")
+        self.sclass = sclass  # 교급
+        self.code = code  # 학교 고유 코드
+
+    def month(self, yeon, dal):
+        if type(self.ooe) != str or type(yeon) != str or type(self.sclass) != str\
+                or type(yeon) != str or type(self.code) != str or type(dal) != str:  # 문자열 형식으로 올바르게 받았는지 확인하는 코드
+            return("TYPE ERROR")
+
+        if len(yeon) != 4 or len(dal) != 2 or len(self.sclass) != 1:  # 길이가 알맞는지 확인하는 코드
+            return("SIZE ERROR")
+
+        url = "http://stu." + self.ooe + "/sts_sci_sf01_001.do"  # 월간 계획 주소
+        para = {
+            "schulCode": self.code,  # 학교코드
+            "schulCrseScCode": self.sclass,  # 교급
+            "schulKndScCode": "0" + self.sclass,  # 교급
+            "ay": yeon,  # 조회년도
+            "mm": dal  # 조회월
+        }
+
+        re = requests.get(url, params=para)  # 나이스 학사일정 조회
+        if int(re.status_code) != 200:  # 비정상 접속시 에러 반환
+            return("SERVER ERROR")
+
+        html = BeautifulSoup(re.text, 'html.parser')  # 파싱 준비
+        html = html.find_all('td')  # td(테이블 구분) 태그만 불러옴
+
+        html_size = len(html)  # 몇줄 있는지 확인
+        calendar = {}
+
+        for i in range(0, html_size):  # 날짜 및 일정 내용 분류
+            html_date = str(html[i].find('em'))  # 날짜 정보 빼오기
+            html_body = str(html[i].find('strong'))  # 일정 정보 빼오기
+
+            for sakje in ['<em>', '</em>', '<em class="point2">']:
+                html_date = html_date.replace(sakje, '')  # html 태그 제거
+
+            for sakje in ['<strong>', '</strong>']:
+                html_body = html_body.replace(sakje, '')  # html 태그 제거
+
+            if html_body == "None":  # 학사일정 미 존재시
+                html_body = "학사일정이 존재하지 않습니다."  # 안내멘트
+
+            if html_date == "":  # 날짜정보 미 존재시
+                continue  # 반복문 탈출
+
+            calendar[html_date] = html_body  # 딕셔너리 추가
+
+        return(calendar)  # 반환
