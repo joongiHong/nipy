@@ -238,9 +238,9 @@ class Smeal:  # Smeal 클래스 생성
     def month(self, yeon, dal, kind, output):  # 한달치 급식을 조회
         # 조회하는 월의 마지막 날 구하는 로직
         if dal == '02':  # 2월 조회시
-            if yeon % 4 == 0 and yeon % 100 != 0:  # 윤년일 경우 29일이 마지막
+            if int(yeon) % 4 == 0 and int(yeon) % 100 != 0:  # 윤년일 경우 29일이 마지막
                 last_day = 29
-            elif yeon % 400 == 0:
+            elif int(yeon) % 400 == 0:
                 last_day = 29
             else:  # 아니면 28이 마지막
                 last_day = 28
@@ -320,7 +320,7 @@ class Smeal:  # Smeal 클래스 생성
 
 # ~~ 3. 학교 학사일정을 불러오는 api ~~
 
-class Scalendar:
+class Scalendar:  # Scalendar 클래스 생성
     def __init__(self, ooe, code, sclass):  # 초기화자 선언
         city_dict = {"서울": "sen.go.kr", "부산": "pen.go.kr", "대구": "dge.go.kr",
                      "인천": "ice.go.kr", "광주": "gen.go.kr", "대전": "dje.go.kr",
@@ -340,6 +340,9 @@ class Scalendar:
 
         if len(yeon) != 4 or len(dal) != 2 or len(self.sclass) != 1:  # 길이가 알맞는지 확인하는 코드
             return("SIZE ERROR")
+
+        if self.ooe == "nocity":
+            return("OFFICE ERROR")
 
         try:
             url = "http://stu." + self.ooe + "/sts_sci_sf01_001.do"  # 월간 계획 주소
@@ -383,3 +386,68 @@ class Scalendar:
             calendar = "NO DATABASE"  # 에러 전달
 
         return(calendar)  # 반환
+
+    def year(self, yeon, output):
+        if output == "e":  # 엑셀 저장 기능
+            op = openpyxl.Workbook()
+
+            try:  # 예외처리
+                for dal in range(1, 13):
+                    dal = str(dal)  # 자료형 전환
+
+                    if int(dal) < 10:  # 1자리일 경우 2자리로
+                        dal = "0" + dal
+
+                    ex = op.create_sheet(dal)
+                    c = self.month(yeon, dal)  # 학사일정 정보 불러옴
+
+                    # 마지막날 조회
+                    if dal == '02':  # 2월 조회시
+                        if int(yeon) % 4 == 0 and int(yeon) % 100 != 0:  # 윤년일 경우 29일이 마지막
+                            last_day = 29
+                        elif int(yeon) % 400 == 0:
+                            last_day = 29
+                        else:  # 아니면 28이 마지막
+                            last_day = 28
+                    elif dal == '01' or dal == '03' or dal == '05' or dal == '07' or dal == '08' or dal == '10' or dal == '12':  # 끝날이 31일 목록
+                        last_day = 31
+                    else:  # 이외는 모두 30일이 마지막
+                        last_day = 30
+
+                    for i in range(1, last_day + 1):  # 모든 날의 학사 일정 불러오기
+                        i = str(i)
+                        if int(i) < 10:
+                            i = "0" + i  # 1자리 일 경우 2자리 만들기
+
+                        cal = c[i]  # 학사 일정 받아옴
+
+                        ex.cell(row=int(i), column=1).value = i + \
+                            "일"  # 날짜 정보 엑셀 삽입
+                        ex.cell(row=int(i), column=2).value = cal  # 학사일정 정보 삽입
+
+                op.save(self.code + "_" + yeon +
+                        "년" + ".xlsx")
+                op.close
+                return("SUCCEED")
+
+            except:  # 실패시 실패 에러 안내
+                op.close()  # 엑셀 닫기
+                return("EXCEL ERROR")
+
+        if output == "d":  # 딕셔너리 저장 기능
+            redi = {}  # 반환할 딕셔너리 준비
+
+            try:  # 예외처리
+                for dal in range(1, 13):
+                    dal = str(dal)  # 자료형 전환
+
+                    if int(dal) < 10:  # 1자리일 경우 2자리로
+                        dal = "0" + dal
+
+                    re = self.month(yeon, dal)  # 한달치 딕셔너리 반환
+                    redi[dal] = re
+
+                return(redi)
+
+            except:  # 실패시 실패 에러 안내
+                return("DICT ERROR")
