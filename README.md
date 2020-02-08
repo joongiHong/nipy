@@ -5,6 +5,7 @@
         <img src="https://img.shields.io/badge/python-v3.7-blue">
         <img src="https://img.shields.io/badge/license-MIT-green">
         <img src="https://img.shields.io/badge/test-passing-brightgreen">
+        <a href="https://joongi1978.gitbook.io/nipy/"><img src="https://img.shields.io/badge/url-document-lightgrey"></a>
     </p>
     <p>NiPy (Neis with ptrhon)이란 대한민국 교육행정정보시스템인 <b>나이스</b>와 관련한 파이썬 개발을 진행하실 때 보다 편리하게 <b>나이스로부터 정보를 가져올 수 있도록 돕는 모듈</b>입니다. 본 모듈은 지금도 개발 중이며 안정성이 보장되지는 않았습니다. 따라서 개발 도중 문제가 발생하시면 이슈 리포트를 이용해 주시거나 직접 소스코드를 수정하여 주시기 바랍니다. 본 모듈은 <b>MIT 라이선스</b>로 자유롭게 사용이 가능합니다.</p>
 </p>
