@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/23215270/74083252-335ccb00-4aa5-11ea-9045-3d87de5c70b2.png">
+    <img src="https://user-images.githubusercontent.com/23215270/74083252-335ccb00-4aa5-11ea-9045-3d87de5c70b2.png" width="500">
     <h1 align="center" style="font-size: 3em;">NiPy</h1>
     <p align="center">
         <img src="https://img.shields.io/badge/python-v3.7-blue">
