@@ -5,7 +5,6 @@
         <img src="https://img.shields.io/badge/python-v3.7-blue">
         <img src="https://img.shields.io/badge/license-MIT-green">
         <img src="https://img.shields.io/badge/test-passing-brightgreen">
-        <a href="https://joongi1978.gitbook.io/nipy/"><img src="https://img.shields.io/badge/url-document-lightgrey"></a>
     </p>
     <p>NiPy (Neis with ptrhon)이란 대한민국 교육행정정보시스템인 <b>나이스</b>와 관련한 파이썬 개발을 진행하실 때 보다 편리하게 <b>나이스로부터 정보를 가져올 수 있도록 돕는 모듈</b>입니다. 본 모듈은 지금도 개발 중이며 안정성이 보장되지는 않았습니다. 따라서 개발 도중 문제가 발생하시면 이슈 리포트를 이용해 주시거나 직접 소스코드를 수정하여 주시기 바랍니다. 본 모듈은 <b>MIT 라이선스</b>로 자유롭게 사용이 가능합니다.</p>
 </p>
@@ -31,9 +30,9 @@ NiPy는 다음과 같은 모듈을 사용하기에 반드시 존재하여야 합
 
 NiPy는 다음과 같은 기능을 지원합니다.
 
-- 나이스 학교 코드 받아오기 (Scode)
-- 학교별 급식 정보 받아오기 (Smeal)
-- 학교별 학사 일정 받아오기 (Scalendar)
+- [나이스 학교 코드 받아오기 (Scode)](docs/scode.md)
+- [학교별 급식 정보 받아오기 (Smeal)](docs/smeal.md)
+- [학교별 학사 일정 받아오기 (Scalendar)](docs/scalendar.md)
 
 위와 같은 기능들은 모두 클래스로 이루어져 간단하고 손쉽게 사용하실 수 있습니다. 자세한 사용 방법은 각 api의 문서를 참고하십시오.  
 참고로 나이스 홈페이지 개편 등에 의해 지원되지 않을 수 있습니다. 그럴 경우 추후 공개되는 개편안을 확인하여 주십시오.
